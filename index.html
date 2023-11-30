@@ -1,0 +1,181 @@
+[20.01, 29/11/2023] ridho Trm: <!DOCTYPE html>
+<html>
+<head>
+  <title>Split Audio from Video</title>
+</head>
+<body>
+  <input type="file" id="videoFile" accept="video/*">
+  <button onclick="splitAudio()">Split Audio</button>
+
+  <script>
+    function splitAudio() {
+      const videoFile = document.getElementById('videoFile').files[0];
+      const formData = new FormData();
+      formData.append('video', videoFile);
+
+      fetch('/split-audio', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.controls = true;
+        document.body.appendChild(audio);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+  </script>
+</body>
+</html>
+[20.01, 29/11/2023] ridho Trm: Node.js
+
+const express = require('express');
+const fileUpload = require('express-fileupload');
+const { exec } = require('child_process');
+const app = express();
+
+app.use(fileUpload());
+
+app.post('/split-audio', (req, res) => {
+  if (!req.files || !req.files.video) {
+    return res.status(400).send('No video file uploaded');
+  }
+
+  const videoFile = req.files.video;
+  const audioFile = 'output.mp3'; // Nama file audio yang akan dihasilkan
+
+  videoFile.mv(videoFile.name, (err) => {
+    if (err) return res.status(500).send(err);
+
+    const command = ffmpeg -i ${videoFile.name} -vn -acodec libmp3lame ${audioFile};
+    exec(command, (error) => {
+      if (error) return res.status(500).send(error);
+
+      res.download(audioFile, (err) => {
+        if (err) return …
+[20.02, 29/11/2023] ridho Trm: script.js
+
+function splitAudio() {
+    const videoFile = document.getElementById('videoFile').files[0];
+    const formData = new FormData();
+    formData.append('video', videoFile);
+  
+    fetch('/split-audio', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.blob())
+    .then(audioBlob => {
+      const audioOutput = document.getElementById('audioOutput');
+      audioOutput.src = URL.createObjectURL(audioBlob);
+      audioOutput.style.display = 'block';
+    })
+    .catch(error => console.error('Error:', error));
+  }
+[20.02, 29/11/2023] ridho Trm: @Ehsan Nura masukin repository nya
+[20.02, 29/11/2023] ridho Trm: baru segitu
+[20.02, 29/11/2023] ridho Trm: belom bikin css nya
+[22.19, 29/11/2023] Ehsan Nura: dho kamu nyobanya di linux apa windows?
+[22.20, 29/11/2023] ridho Trm: baru windows, kalo di windows udsh berhasil baru aku pindahin ke Linux
+[10.35, 30/11/2023] Ehsan Nura: Dimana ren @Mauren
+[10.35, 30/11/2023] Ehsan Nura: Nyari kelas yg nyaman
+[10.40, 30/11/2023] ridho Trm: yang bisa rebahan
+[10.43, 30/11/2023] Mauren: Dimana
+[10.43, 30/11/2023] Mauren: Aku masih dikapal
+[10.43, 30/11/2023] Mauren: Ppns
+[10.44, 30/11/2023] Mauren: Ps Lt 3 biasanya kosong
+[10.45, 30/11/2023] ridho Trm: ok
+[10.45, 30/11/2023] ridho Trm: 7 aja
+[10.49, 30/11/2023] Mauren: Ok
+[11.18, 30/11/2023] ridho Trm: index.html
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Merekam Layar dengan FFmpeg</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Stylesheet inline untuk menyertakan warna dan font */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #87CEEB;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        h1 {
+            font-family: 'Times New Roman', sans-serif;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .buttons {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .video-container {
+            width: 100%;
+            position: relative;
+            padding-bottom: 56.25%;
+            /* 16:9 aspect ratio */
+            margin-bottom: 40px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #recordedVideo {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Merekam Layar dengan FFmpeg</h1>
+        <div class="buttons">
+            <button id="startRecording">Mulai Rekam</button>
+            <button id="stopRecording">Berhenti Rekam</button>
+            <button id="saveRecording">Simpan Rekaman</button>
+            <button id="convertToMP4">Convert to MP4</button>
+        </div>
+        <div class="video-container">
+            <video id="recordedVideo" controls></video>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
