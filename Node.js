@@ -1,17 +1,38 @@
 const express = require('express');
 const multer = require('multer');
+const fs = require('fs');
 const { exec } = require('child_process');
 
 const app = express();
-const upload = multer();
+const upload = multer({ dest: 'uploads/' });
 
-app.post('/convertToMP4', upload.single('video'), async (req, res) => {
+app.post('/saveRecording', upload.single('video'), (req, res) => {
     if (!req.file) {
         return res.status(400).send('Tidak ada file yang diunggah');
     }
 
     const inputFile = req.file.path;
-    const outputFile = 'converted-video.mp4';
+    const destination = 'recordings/';
+    const outputFile = `${destination}recorded-video.webm`;
+
+    fs.rename(inputFile, outputFile, (err) => {
+        if (err) {
+            console.error('Gagal menyimpan file:', err);
+            return res.status(500).send('Gagal menyimpan rekaman');
+        }
+        console.log('Rekaman berhasil disimpan di server');
+        res.status(200).send('Rekaman berhasil disimpan');
+    });
+});
+
+app.post('/convertToMP4', upload.single('video'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('Tidak ada file yang diunggah');
+    }
+
+    const inputFile = req.file.path;
+    const destination = 'recordings/';
+    const outputFile = `${destination}converted-video.mp4`;
 
     const command = `ffmpeg -i ${inputFile} ${outputFile}`;
     exec(command, async (error, stdout, stderr) => {
@@ -19,7 +40,7 @@ app.post('/convertToMP4', upload.single('video'), async (req, res) => {
             console.error(`Error: ${error.message}`);
             return res.status(500).send('Konversi gagal');
         }
-        console.log(`Konversi berhasil`);
+        console.log('Konversi berhasil');
 
         const convertedBuffer = await fs.promises.readFile(outputFile);
         res.set({
@@ -30,4 +51,6 @@ app.post('/convertToMP4', upload.single('video'), async (req, res) => {
     });
 });
 
-// ...
+app.listen(3000, () => {
+    console.log('Server berjalan pada port 3000');
+});

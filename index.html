@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Merekam Layar dengan FFmpeg</title>
-    <link rel="stylesheet" href="style.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #87CEEB;
+            background-color: rgb(15, 176, 165);
             margin: 0;
             padding: 0;
         }
@@ -20,8 +18,8 @@
         }
 
         h1 {
-            font-family: 'Times New Roman', sans-serif;
-            color: #333;
+            font-family: 'Montserrat', sans-serif;
+            color: #ffffff;
             margin-bottom: 30px;
         }
 
@@ -48,8 +46,7 @@
         .video-container {
             width: 100%;
             position: relative;
-            padding-bottom: 56.25%;
-            /* 16:9 aspect ratio */
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
             margin-bottom: 40px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
@@ -63,26 +60,34 @@
             top: 0;
             left: 0;
         }
+
+        /* Header styles */
+        header {
+            background-color: #3447db;
+            color: white;
+            padding: 10px 0;
+            margin-bottom: 20px;
+            text-align: center; /* Untuk menengahkan teks */
+        }
     </style>
 </head>
-
 <body>
+    <header>
+        <h1>ForRecord</h1>
+    </header>
     <div class="container">
-        <h1>Merekam Layar dengan FFmpeg
-            
-        </h1>
+        <h1>Merekam Layar dengan FFmpeg</h1>
         <div class="buttons">
             <button id="startRecording">Mulai Rekam</button>
             <button id="stopRecording">Berhenti Rekam</button>
+            <input type="text" id="fileName" placeholder="Nama File">
             <button id="saveRecording">Simpan Rekaman</button>
-            <button id="convertToMP4">Convert to MP4</button>
+
         </div>
         <div class="video-container">
             <video id="recordedVideo" controls></video>
         </div>
     </div>
     <script src="script.js"></script>
-    
 </body>
-
 </html>
