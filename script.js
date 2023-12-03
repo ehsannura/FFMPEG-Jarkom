@@ -1,70 +1,61 @@
 const startRecordingBtn = document.getElementById('startRecording');
 const stopRecordingBtn = document.getElementById('stopRecording');
 const saveRecordingBtn = document.getElementById('saveRecording');
-const convertToMP4Btn = document.getElementById('convertToMP4'); // Tambahan tombol konversi
 const recordedVideo = document.getElementById('recordedVideo');
+const fileNameInput = document.getElementById('fileName');
 
 let mediaRecorder;
-let recordedChunks = [];
-let recordRTC;
+const recordedChunks = [];
 
 startRecordingBtn.addEventListener('click', startRecording);
 stopRecordingBtn.addEventListener('click', stopRecording);
 saveRecordingBtn.addEventListener('click', saveRecording);
-convertToMP4Btn.addEventListener('click', convertToMP4); // Event handler untuk konversi
 
 async function startRecording() {
-    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-    mediaRecorder = new MediaRecorder(stream);
+    try {
+        const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+        const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-    mediaRecorder.ondataavailable = function (e) {
-        recordedChunks.push(e.data);
-    };
+        stream.addTrack(audioStream.getAudioTracks()[0]);
+        mediaRecorder = new MediaRecorder(stream);
 
-    mediaRecorder.onstop = function () {
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-        recordedVideo.src = URL.createObjectURL(blob);
-    };
+        mediaRecorder.ondataavailable = function (e) {
+            recordedChunks.push(e.data);
+        };
 
-    recordedChunks = [];
-    mediaRecorder.start();
+        mediaRecorder.onstop = function () {
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            recordedVideo.src = URL.createObjectURL(blob);
+        };
+
+        recordedChunks.length = 0; // Clear the array
+        mediaRecorder.start();
+    } catch (error) {
+        console.error('Error saat memulai merekam:', error);
+    }
 }
 
-function stopRecording() {
-    mediaRecorder.stop();
+async function stopRecording() {
+    try {
+        await mediaRecorder.stop();
+        console.log('Merekam dihentikan');
+    } catch (error) {
+        console.error('Error saat menghentikan merekam:', error);
+    }
 }
 
 function saveRecording() {
+    const fileName = fileNameInput.value || 'recorded-video'; // Default file name
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
     const url = URL.createObjectURL(blob);
+
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'recorded-video.webm';
+    a.download = `${fileName}.webm`;
+    a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
+    window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
 }
 
-async function convertToMP4() {
-    const blob = new Blob(recordedChunks, { type: 'video/webm' });
-    const formData = new FormData();
-    formData.append('video', blob, 'recorded-video.webm');
-
-    try {
-        const response = await fetch('/convertToMP4', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (response.ok) {
-            const convertedBlob = await response.blob();
-            const convertedUrl = URL.createObjectURL(convertedBlob);
-            recordedVideo.src = convertedUrl;
-        } else {
-            console.error('Konversi gagal');
-        }
-    } catch (error) {
-        console.error('Terjadi kesalahan:', error);
-    }
-}
