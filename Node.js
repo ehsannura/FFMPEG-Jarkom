@@ -12,7 +12,7 @@ app.post('/saveRecording', upload.single('video'), (req, res) => {
     }
 
     const inputFile = req.file.path;
-    const destination = 'recordings/';
+    const destination = 'recordings/'; // Ubah sesuai dengan folder penyimpanan yang diinginkan
     const outputFile = `${destination}recorded-video.webm`;
 
     fs.rename(inputFile, outputFile, (err) => {
@@ -31,7 +31,7 @@ app.post('/convertToMP4', upload.single('video'), (req, res) => {
     }
 
     const inputFile = req.file.path;
-    const destination = 'recordings/';
+    const destination = 'recordings/'; // Ubah sesuai dengan folder penyimpanan yang diinginkan
     const outputFile = `${destination}converted-video.mp4`;
 
     const command = `ffmpeg -i ${inputFile} ${outputFile}`;
@@ -40,7 +40,7 @@ app.post('/convertToMP4', upload.single('video'), (req, res) => {
             console.error(`Error: ${error.message}`);
             return res.status(500).send('Konversi gagal');
         }
-        console.log('Konversi berhasil');
+        console.log(`Konversi berhasil`);
 
         const convertedBuffer = await fs.promises.readFile(outputFile);
         res.set({
