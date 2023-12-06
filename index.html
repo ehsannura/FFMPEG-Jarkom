@@ -1,109 +1,17 @@
-[20.01, 29/11/2023] ridho Trm: <!DOCTYPE html>
-<html>
-<head>
-  <title>Split Audio from Video</title>
-</head>
-<body>
-  <input type="file" id="videoFile" accept="video/*">
-  <button onclick="splitAudio()">Split Audio</button>
-
-  <script>
-    function splitAudio() {
-      const videoFile = document.getElementById('videoFile').files[0];
-      const formData = new FormData();
-      formData.append('video', videoFile);
-
-      fetch('/split-audio', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.blob())
-      .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const audio = new Audio(url);
-        audio.controls = true;
-        document.body.appendChild(audio);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-    }
-  </script>
-</body>
-</html>
-[20.01, 29/11/2023] ridho Trm: Node.js
-
-const express = require('express');
-const fileUpload = require('express-fileupload');
-const { exec } = require('child_process');
-const app = express();
-
-app.use(fileUpload());
-
-app.post('/split-audio', (req, res) => {
-  if (!req.files || !req.files.video) {
-    return res.status(400).send('No video file uploaded');
-  }
-
-  const videoFile = req.files.video;
-  const audioFile = 'output.mp3'; // Nama file audio yang akan dihasilkan
-
-  videoFile.mv(videoFile.name, (err) => {
-    if (err) return res.status(500).send(err);
-
-    const command = ffmpeg -i ${videoFile.name} -vn -acodec libmp3lame ${audioFile};
-    exec(command, (error) => {
-      if (error) return res.status(500).send(error);
-
-      res.download(audioFile, (err) => {
-        if (err) return …
-[20.02, 29/11/2023] ridho Trm: script.js
-
-function splitAudio() {
-    const videoFile = document.getElementById('videoFile').files[0];
-    const formData = new FormData();
-    formData.append('video', videoFile);
-  
-    fetch('/split-audio', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.blob())
-    .then(audioBlob => {
-      const audioOutput = document.getElementById('audioOutput');
-      audioOutput.src = URL.createObjectURL(audioBlob);
-      audioOutput.style.display = 'block';
-    })
-    .catch(error => console.error('Error:', error));
-  }
-[20.02, 29/11/2023] ridho Trm: @Ehsan Nura masukin repository nya
-[20.02, 29/11/2023] ridho Trm: baru segitu
-[20.02, 29/11/2023] ridho Trm: belom bikin css nya
-[22.19, 29/11/2023] Ehsan Nura: dho kamu nyobanya di linux apa windows?
-[22.20, 29/11/2023] ridho Trm: baru windows, kalo di windows udsh berhasil baru aku pindahin ke Linux
-[10.35, 30/11/2023] Ehsan Nura: Dimana ren @Mauren
-[10.35, 30/11/2023] Ehsan Nura: Nyari kelas yg nyaman
-[10.40, 30/11/2023] ridho Trm: yang bisa rebahan
-[10.43, 30/11/2023] Mauren: Dimana
-[10.43, 30/11/2023] Mauren: Aku masih dikapal
-[10.43, 30/11/2023] Mauren: Ppns
-[10.44, 30/11/2023] Mauren: Ps Lt 3 biasanya kosong
-[10.45, 30/11/2023] ridho Trm: ok
-[10.45, 30/11/2023] ridho Trm: 7 aja
-[10.49, 30/11/2023] Mauren: Ok
-[11.18, 30/11/2023] ridho Trm: index.html
-
 <!DOCTYPE html>
 <html>
 
+
 <head>
-    <title>Merekam Layar dengan FFmpeg</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="WEB 3.img" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="img/fr logo.png">
+    <title>ForRecord.</title>
     <style>
-        /* Stylesheet inline untuk menyertakan warna dan font */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #87CEEB;
+            background-color: rgba(255, 255, 255, 1);
+            background: linear-gradient(180deg, rgb(192, 142, 179) 0%, rgb(224, 202, 214) 65.1%, rgb(134, 168, 205) 100%);
             margin: 0;
             padding: 0;
         }
@@ -116,21 +24,47 @@ function splitAudio() {
         }
 
         h1 {
-            font-family: 'Times New Roman', sans-serif;
-            color: #333;
-            margin-bottom: 30px;
+            text-shadow: 2px 2px 5px #e0cad6;
+            font-family: "Poppins-ExtraBoldItalic", Helvetica;
+            font-weight: 800;
+            font-style: italic;
+            color: #f5f5f5;
+            font-size: 64px;
+            letter-spacing: 0;
+            line-height: normal;
+            margin-bottom: -22px;
+            transition: text-shadow 0.2s ease-in-out;
+        }
+
+        h1:hover {
+            cursor: default;
+            text-shadow: 2px 2px 20px rgba(255, 255, 255, 0.9);
+        }
+
+        h2 {
+            font-family: "Poppins-Bold", Helvetica;
+            font-weight: 700;
+            color: #f5f5f5;
+            font-size: 20px;
+            letter-spacing: 0;
+            line-height: normal;
+        }
+
+        h2:hover{
+            cursor: default;
         }
 
         .buttons {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            margin-right: 5px;
         }
 
         button {
             padding: 10px 20px;
-            margin: 5px;
+            margin: 10px;
             font-size: 16px;
             border: none;
-            border-radius: 4px;
+            border-radius: 44px;
             cursor: pointer;
             background-color: #3498db;
             color: white;
@@ -141,11 +75,70 @@ function splitAudio() {
             background-color: #2980b9;
         }
 
+        .img {
+            margin-bottom: -10px;
+            margin: 15px;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            transition: transform 0.3s ease-in-out, box-shadow 0.4s ease-in-out;
+            ;
+        }
+
+        .img-text {
+            font-family: "Poppins-Bold", Helvetica;
+            font-weight: 700;
+            font-size: 17px;
+            color: #0b1c47;
+            margin: 18px;
+            margin-bottom: auto;
+            cursor: default;
+        }
+
+        .img:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px 5px rgba(106, 138, 235, 0.464);
+
+        }
+        
+        img-button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 50%;
+            cursor: text;
+        }
+
+        .input {
+            margin-bottom: 20px;
+            margin-top: 10px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        input {
+            padding: 5px 20px;
+            margin: 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: text;
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+            border-radius: 88px;
+            border: 4px solid;
+            border-color: #0b1c47;
+            transition: background-color 0.3s;
+        }
+
+        .input:hover {
+            transform: scale(1.1);
+        }
+
         .video-container {
             width: 100%;
             position: relative;
             padding-bottom: 56.25%;
-            /* 16:9 aspect ratio */
             margin-bottom: 40px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
@@ -158,24 +151,53 @@ function splitAudio() {
             height: 100%;
             top: 0;
             left: 0;
+            border-radius: 2%;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: #0b1c47;
+            color: white;
+            padding: 5px 0;
+            margin-bottom: 5px;
+            text-align: center;
         }
     </style>
 </head>
 
 <body>
+    <header>
+        <h1>ForRecord.</h1>
+        <h2>capture your screen with FFmpeg</h2>
+    </header>
     <div class="container">
-        <h1>Merekam Layar dengan FFmpeg</h1>
-        <div class="buttons">
-            <button id="startRecording">Mulai Rekam</button>
-            <button id="stopRecording">Berhenti Rekam</button>
-            <button id="saveRecording">Simpan Rekaman</button>
-            <button id="convertToMP4">Convert to MP4</button>
+        <div class="img-buttons">
+            <div class="buttons">
+                <a href="#" onclick="startRecording()">
+                    <img src="img/rekam.svg" alt="Mulai Rekam" class="img">
+                </a>
+                <a href="#" onclick="stopRecording()">
+                    <img src="img/stop.png" alt="Berhenti Rekam" class="img">
+                </a>
+                <a href="#" onclick="saveRecording()">
+                    <img src="img/download.png" alt="Simpan Rekaman" class="img">
+                </a>
+
+            </div>
+            <span class="img-text">Mulai</span>
+            <span class="img-text">Berhenti</span>
+            <span class="img-text">Simpan</span>
+
+            <div class="input">
+                <input type="text" id="fileName" placeholder="Nama Rekaman">
+
+            </div>
+            <div class="video-container">
+                <video id="recordedVideo" controls></video>
+            </div>
         </div>
-        <div class="video-container">
-            <video id="recordedVideo" controls></video>
-        </div>
-    </div>
-    <script src="script.js"></script>
+        <script src="script.js">
+        </script>
 </body>
 
 </html>
